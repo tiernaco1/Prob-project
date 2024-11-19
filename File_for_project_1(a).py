@@ -31,3 +31,5 @@ def run_proportion_simulations(Delta_t, num_steps = 1000, num_simulations = 1000
 
 Delta_t = [0.01, 0.001, 0.0001]
 run_proportion_simulations(Delta_t)
+
+# test
