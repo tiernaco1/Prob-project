@@ -30,12 +30,12 @@ dt <- 0.001  # Time interval ∆t
 Tmax_values <- simulate_temperature(dt)
 # Plot histogram 2
 hist(Tmax_values, breaks = 50, probability = TRUE, main = paste("dt = 0.001"),
-     xlab = "Tmax", ylab = "Density", col = "skyblue", border = "white")
+     xlab = "Time temperature is max", ylab = "Density", col = "skyblue", border = "white")
 
 # Set simulation parameters
-dt <- 0.001  # Time interval ∆t
+dt <- 0.0001  # Time interval ∆t
 # Run Simulation
 Tmax_values <- simulate_temperature(dt)
 # Plot histogram 3
 hist(Tmax_values, breaks = 50, probability = TRUE, main = paste("dt = 0.0001"),
-     xlab = "Tmax", ylab = "Density", col = "skyblue", border = "white")
+     xlab = "Time temperature is max", ylab = "Density", col = "skyblue", border = "white")
