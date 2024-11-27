@@ -1,4 +1,4 @@
-simulate_temperature <- function(dt = 0.01) {
+simulate_temperature <- function(dt) {
   Tmax_values <- c(100000) # creates a empty vector for results
   
   # Monte Carlo simulation
@@ -15,24 +15,23 @@ simulate_temperature <- function(dt = 0.01) {
   return(Tmax_values) # Return the Tmax values from all simulations
 }
 
+# Set simulation parameters
+dt <- 0.01  # Time interval ∆t
+# Run Simulation
+Tmax_values <- simulate_temperature(dt)
 
-#par(mfrow = c(1, length(dt_values))) # Set up plotting area
+# Plot histogram 1
+hist(Tmax_values, breaks = 50, probability = TRUE, main = "dt = 0.01",
+     xlab = "Time temperature is max", ylab = "Density", col = "skyblue", border = "white")
 
+Tmax_values <- simulate_temperature(dt)
 
-Tmax_values <- simulate_temperature(0.01)
-
-# Plot histogram
-hist(Tmax_values, breaks = 50, probability = TRUE, main = paste("dt = 0.01"),
-     xlab = "Tmax", ylab = "Density", col = "skyblue", border = "white")
-
-Tmax_values <- simulate_temperature(0.001)
-
-# Plot histogram
+# Plot histogram 2
 hist(Tmax_values, breaks = 50, probability = TRUE, main = paste("dt = 0.001"),
      xlab = "Tmax", ylab = "Density", col = "skyblue", border = "white")
 
-Tmax_values <- simulate_temperature(0.0001)
+Tmax_values <- simulate_temperature(dt)
 
-# Plot histogram
+# Plot histogram 3
 hist(Tmax_values, breaks = 50, probability = TRUE, main = paste("dt = 0.0001"),
      xlab = "Tmax", ylab = "Density", col = "skyblue", border = "white")
