@@ -3,7 +3,7 @@ remaining_fixtures <- read.csv("remaining fixtures.csv", header = TRUE)
 team_stats <- read.csv("Stats_for_PL.csv", header = TRUE)
 str(team_stats$Teams)
 
-simulate_game <- function(home_team, away_team, team_stats, monte_carlo = 1000){
+simulate_game <- function(home_team, away_team, team_stats, monte_carlo = 100){
   
   home_stats <- team_stats %>% filter(Teams == home_team)
   away_stats <- team_stats %>% filter(Teams == away_team)
@@ -36,9 +36,9 @@ simulate_game <- function(home_team, away_team, team_stats, monte_carlo = 1000){
   }
 
   
-  if (home_wins > away_wins) {
+  if (home_wins > away_wins && home_wins > draws) {
     home_result <- "Win"
-  } else if (home_wins < away_wins) {
+  } else if (home_wins < away_wins && draws < away_wins) {
     home_result <- "Loss"
   } else {
     home_result <- "Draw"
