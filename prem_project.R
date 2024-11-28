@@ -3,7 +3,7 @@ remaining_fixtures <- read.csv("remaining fixtures.csv", header = TRUE)
 team_stats <- read.csv("Stats_for_PL.csv", header = TRUE)
 str(team_stats$Teams)
 
-simulate_game <- function(home_team, away_team, team_stats){
+simulate_game <- function(home_team, away_team, team_stats, monte_carlo = 1000){
   
   home_stats <- team_stats %>% filter(Teams == home_team)
   away_stats <- team_stats %>% filter(Teams == away_team)
@@ -19,12 +19,26 @@ simulate_game <- function(home_team, away_team, team_stats){
   home_xG_real <- (home_xG + away_xGA_90) / 2
   away_xG_real <- (away_xG + home_xGA_90) / 2
   
-  home_goals <- rpois(1, lambda = home_xG_real)
-  away_goals <- rpois(1, lambda = away_xG_real)
+  home_wins <- 0
+  away_wins <- 0
+  draws <- 0
   
-  if (home_goals > away_goals) {
+  for (i in 1:monte_carlo) {
+    home_goals <- rpois(1, lambda = home_xG_real)
+    away_goals <- rpois(1, lambda = away_xG_real)
+    if (home_goals > away_goals) {
+      home_wins <- home_wins + 1
+    } else if (home_goals < away_goals) {
+      away_wins <- away_wins + 1
+    } else {
+      draws <- draws + 1
+    }
+  }
+
+  
+  if (home_wins > away_wins) {
     home_result <- "Win"
-  } else if (home_goals < away_goals) {
+  } else if (home_wins < away_wins) {
     home_result <- "Loss"
   } else {
     home_result <- "Draw"
@@ -38,7 +52,7 @@ simulate_game <- function(home_team, away_team, team_stats){
     AwayGoals = away_goals,
     ExpectedGoals = list(Home = home_xG_real, Away = away_xG_real)
   ))
-
+  
 }
 
 simulate_game("Man Utd", "Ipswich", team_stats)
