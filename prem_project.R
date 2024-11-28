@@ -7,12 +7,11 @@ simulate_game <- function(home_team, away_team, team_stats, monte_carlo = 500){
   
   home_stats <- team_stats %>% filter(Teams == home_team)
   away_stats <- team_stats %>% filter(Teams == away_team)
-  
+  # gets values in allign with variable names
   home_xG_90 <- as.numeric(home_stats$xG.p90)
   home_xGA_90 <- as.numeric(home_stats$xGA..p90)
   away_xG_90 <- as.numeric(away_stats$xG.p90)
   away_xGA_90 <- as.numeric(away_stats$xGA..p90)
-  
   
   home_goals_p90 <- as.numeric((home_stats$G..p90))
   away_goals_p90 <- as.numeric((away_stats$G..p90))
@@ -25,33 +24,33 @@ simulate_game <- function(home_team, away_team, team_stats, monte_carlo = 500){
   # averages goals against xGA
   home_xGA_90 <- (home_goals_against_p90 + home_xGA_90) / 2
   away_xGA_90 <- (away_goals_against_p90 + away_xGA_90) / 2
+  # finds average of goals for and other teams against
+  home_xG_real <- (home_xG_90 + away_xGA_90) / 2
+  away_xG_real <- (away_xG_90 + home_xGA_90) / 2
   
   # adjust based on home advantage
-  home_xG <- home_xG_90 * 1.2
-  away_xG <- away_xG_90 * 0.8
+  home_xG <- home_xG_real * 1.2
+  away_xG <- away_xG_real * 0.8
   
-  home_xG_real <- (home_xG + away_xGA_90) / 2
-  away_xG_real <- (away_xG + home_xGA_90) / 2
-  
-  home_xGD <- as.numeric(home_stats$xGD.p90)
-  away_xGD <- as.numeric(away_stats$xGD.p90)
-  
-  home_xG_real <- home_xG_real + max(0, home_xGD * 0.1)
-  away_xG_real <- away_xG_real + max(0, away_xGD * 0.1)
+  home_GD <- as.numeric(home_stats$GD..p90)
+  away_GD <- as.numeric(away_stats$GD..p90)
+  # uses goal difference as a weight
+  home_xG <- home_xG + max(0, home_GD * 0.1)
+  away_xG <- away_xG + max(0, away_GD * 0.1)
   
   home_position <- as.numeric(home_stats$position)
   away_position <- as.numeric(away_stats$position)
   
-  home_xG_real <- home_xG_real *(2 * ((21 - home_position) / 20))
-  away_xG_real <- away_xG_real * (2 * ((21 - away_position) / 20))
+  home_xG <- home_xG *(2 * ((21 - home_position) / 20))
+  away_xG <- away_xG * (2 * ((21 - away_position) / 20))
   
   home_wins <- 0
   away_wins <- 0
   draws <- 0
   
   for (i in 1:monte_carlo) {
-    home_goals <- rpois(1, lambda = home_xG_real)
-    away_goals <- rpois(1, lambda = away_xG_real)
+    home_goals <- rpois(1, lambda = home_xG)
+    away_goals <- rpois(1, lambda = away_xG)
     if (home_goals > away_goals) {
       home_wins <- home_wins + 1
     } else if (home_goals < away_goals) {
@@ -74,14 +73,15 @@ simulate_game <- function(home_team, away_team, team_stats, monte_carlo = 500){
     HomeTeam = home_team,
     AwayTeam = away_team,
     HomeResult = home_result,
-    HomeGoals = home_goals,
-    AwayGoals = away_goals,
-    ExpectedGoals = list(Home = home_xG_real, Away = away_xG_real)
+    HomeWins = home_wins,
+    AwayWins = away_wins,
+    Draws = draws,
+    ExpectedGoals = list(Home = home_xG, Away = away_xG)
   ))
   
 }
 
-simulate_game("Man Utd", "Ipswich", team_stats)
+#simulate_game("Man Utd", "Ipswich", team_stats)
 
 simulate_reamining_season <- function(remaining_fixtures, team_stats){
   teams <- matrix(nrow = 20, ncol = 2) #create table 
