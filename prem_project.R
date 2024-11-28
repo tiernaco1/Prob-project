@@ -81,7 +81,11 @@ simulate_reamining_season <- function(remaining_fixtures, team_stats){
       teams[away_startPos,2] <- points + 1
     }
   }
-  print(teams)
+  teams <- teams[order(teams[, 2], decreasing = TRUE),]
+  my_table <- as.table(teams)
+  colnames(my_table) <- c("Teams", "Pts")
+  rownames(my_table) <- c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20)
+  print(my_table)
 }
 
 simulate_reamining_season(remaining_fixtures, team_stats)
