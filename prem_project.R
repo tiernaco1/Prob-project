@@ -3,7 +3,7 @@ remaining_fixtures <- read.csv("remaining fixtures.csv", header = TRUE)
 team_stats <- read.csv("Stats_for_PL.csv", header = TRUE)
 str(team_stats$Teams)
 
-simulate_game <- function(home_team, away_team, team_stats, monte_carlo = 100){
+simulate_game <- function(home_team, away_team, team_stats, monte_carlo = 500){
   
   home_stats <- team_stats %>% filter(Teams == home_team)
   away_stats <- team_stats %>% filter(Teams == away_team)
@@ -13,11 +13,37 @@ simulate_game <- function(home_team, away_team, team_stats, monte_carlo = 100){
   away_xG_90 <- as.numeric(away_stats$xG.p90)
   away_xGA_90 <- as.numeric(away_stats$xGA..p90)
   
-  home_xG <- home_xG_90 * 1.1
-  away_xG <- away_xG_90 * 0.9
+  
+  home_goals_p90 <- as.numeric((home_stats$G..p90))
+  away_goals_p90 <- as.numeric((away_stats$G..p90))
+  
+  home_goals_against_p90 <- as.numeric((home_stats$GA..p90))
+  away_goals_against_p90 <- as.numeric((away_stats$GA..p90))
+  #averages goals and xG
+  home_xG_90 <- (home_goals_p90 + home_xG_90) / 2
+  away_xG_90 <- (away_goals_p90 + away_xG_90) / 2
+  # averages goals against xGA
+  home_xGA_90 <- (home_goals_against_p90 + home_xGA_90) / 2
+  away_xGA_90 <- (away_goals_against_p90 + away_xGA_90) / 2
+  
+  # adjust based on home advantage
+  home_xG <- home_xG_90 * 1.2
+  away_xG <- away_xG_90 * 0.8
   
   home_xG_real <- (home_xG + away_xGA_90) / 2
   away_xG_real <- (away_xG + home_xGA_90) / 2
+  
+  home_xGD <- as.numeric(home_stats$xGD.p90)
+  away_xGD <- as.numeric(away_stats$xGD.p90)
+  
+  home_xG_real <- home_xG_real + max(0, home_xGD * 0.1)
+  away_xG_real <- away_xG_real + max(0, away_xGD * 0.1)
+  
+  home_position <- as.numeric(home_stats$position)
+  away_position <- as.numeric(away_stats$position)
+  
+  home_xG_real <- home_xG_real *(2 * ((21 - home_position) / 20))
+  away_xG_real <- away_xG_real * (2 * ((21 - away_position) / 20))
   
   home_wins <- 0
   away_wins <- 0
